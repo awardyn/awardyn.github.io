@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en-US">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zad3</title>
+    <link rel="stylesheet" href="dist/basicLightbox.min.css">
+</head>
+<body>
+
+  <form id="search-form">
+    <input
+      type="text"
+      name="query"
+      autocomplete="off"
+      placeholder="Search images..."
+      onchange="fetchImages(this.value)"
+    />
+    </form>
+    
+    <ul>
+    </ul>
+  
+  <script>
+    let x = 1;
+    let text = "";
+    let lastImageObserver;
+
+    function showBigImage(src) {
+      const instance = basicLightbox.create(`
+        <img src="${src}"" alt="obrazek" />
+      `);
+      instance.show()
+    }
+
+    function css(element, style) {
+      for (const property in style)
+        element.style[property] = style[property];
+    }
+
+    async function createImages(data) {
+      x ++;
+      for (let step = 0; step < data.hits.length; step++) {
+            const ul = document.getElementsByTagName("ul")[0];
+            var newLi = document.createElement('li');
+            newLi.classList.add("image");
+            newLi.onclick = function() { 
+              const instance = basicLightbox.create(`
+                <img src="${data.hits[step].largeImageURL}" alt="obrazek" />
+              `);
+              instance.show();
+            };
+
+            var newA = document.createElement('a');
+            var newImg = document.createElement('img');
+            newImg.src = data.hits[step].webformatURL;
+
+            css(newLi, {
+              'margin-bottom': '16px',
+            });
+
+            css(newImg, {
+              width: "80px",
+              height: "80px"
+            });
+
+            css(newA, {
+              'background-color': 'pink',
+              width: "100px",
+              height: "100px",
+              display: 'flex',
+              'align-items': 'center',
+              'justify-content': 'center'
+            });
+
+            newA.appendChild(newImg);
+            newLi.appendChild(newA);
+            ul.appendChild(newLi);
+          }
+    }
+
+    async function fetchImages(e) {
+      x = 1;
+      const search = e.split(" ").join("+");
+      text = search;
+      fetch(`https://pixabay.com/api/?key=31283158-f1a50e88f1258422acade0d6b&q=${search}&image_type=photo&page=${x}`)
+        .then((response) => response.json())
+        .then((data) => {
+          createImages(data);
+        }).then(() => {
+          lastImageObserver = new IntersectionObserver(entries => {
+            const lastImage = entries[0];
+            if (!lastImage.isIntersecting) return;
+            loadImagesFromScroll(lastImage);
+          }, {
+            rootMargin: "100px"
+          });
+          lastImageObserver.observe(document.querySelector(".image:last-child"));
+        });
+    }
+
+    async function loadImagesFromScroll(lastImage) {
+      fetch(`https://pixabay.com/api/?key=31283158-f1a50e88f1258422acade0d6b&q=${text}&image_type=photo&page=${x}`)
+        .then((response) => response.json())
+        .then((data) => {
+          createImages(data);
+        }).then(() => {
+          lastImageObserver.unobserve(lastImage.target);
+          lastImageObserver.observe(document.querySelector(".image:last-child"))
+        });
+    }
+  </script>
+  <script src="dist/basicLightbox.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-US">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zad2</title>
+</head>
+<body>
+
+  <div id="controls">
+    <input type="number" min="0" max="100" step="1" class="js-input" />
+    <button type="button" data-action="create" onclick="createBoxes(document.querySelector('input').value);">Utwórz</button>
+    <button type="button" data-action="destroy" onclick="destroyBoxes();">Usuń</button>
+  </div>
+
+  <div id="boxes"></div>
+  
+  <script>
+    function css(element, style) {
+      for (const property in style)
+        element.style[property] = style[property];
+    }
+
+    function randomInteger(max) {
+      return Math.floor(Math.random()*(max + 1));
+    }
+
+    function randomRgbColor() {
+      return [randomInteger(255), randomInteger(255), randomInteger(255)];
+    }
+
+    function createBoxes(amount) {
+      if (amount > 0) {
+        let size = 30;
+        const boxes = document.getElementById("boxes");
+        for (let step = 0; step < amount; step++) {
+          var newDiv = document.createElement('div');
+          const color = randomRgbColor();
+          css(newDiv, {
+            'background-color': `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+            width: `${size}px`,
+            height: `${size}px`
+          });
+          boxes.appendChild(newDiv);
+          size += 10;
+        }
+      }
+    }
+
+    // tutaj nie zrozumialem tresci zadania czy mam usunac dzieci diva boxes
+    // czy usunac samego diva boxes
+    // wiec usuwam dzieci aby moc dodac pozniej znowu boxy
+    function destroyBoxes() {
+      document.getElementById('boxes').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
