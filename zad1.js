@@ -17,6 +17,7 @@ class StringBuilder {
     this.value = str + this.value + str;
     return this;
   }
+  
 
   toString() {
     return this.value;
